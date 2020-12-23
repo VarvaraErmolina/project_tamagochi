@@ -21,18 +21,9 @@ def load_image(name, colorkey=None):
 
 if __name__ == '__main__':
     pygame.init()
-    size = width, height = 800, 650
+    size = width, height = 800, 600
     screen = pygame.display.set_mode(size)
-    pygame.display.set_caption('Тамагочи')
-    bg = load_image("cub.jpg")
-    running = True
-    # clock = pygame.time.Clock()
-    while running:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-            if event.type == pygame.MOUSEBUTTONUP:
-                pass
-        pygame.display.flip()
-        screen.blit(bg, (0, 0))
+    pygame.display.flip()
+    while pygame.event.wait().type != pygame.QUIT:
+        pass
     pygame.quit()
