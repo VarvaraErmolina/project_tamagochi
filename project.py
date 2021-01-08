@@ -1,6 +1,7 @@
 import pygame
 import os
 import sys
+import random
 
 
 def load_image(name, colorkey=None):
@@ -77,23 +78,35 @@ def rules():
             if event.type == pygame.QUIT:
                 exit()
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                main_screen()
+                main_play()
         pygame.display.flip()
         clock.tick(FPS)
 
 
-def main_screen():
-    bg = load_image("cub.jpg")
-    running = True
-    clock = pygame.time.Clock()
-    while running:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                exit()
-            if event.type == pygame.MOUSEBUTTONUP:
-                pass
-        pygame.display.flip()
-        screen.blit(bg, (0, 0))
+class Particle(pygame.sprite.Sprite):
+
+    def __init__(self, pos, dx, dy):
+        super().__init__(bub_sprites)
+        self.image = random.choice(particles)
+        self.rect = self.image.get_rect()
+        self.velocity = [dx, dy]
+        self.rect.x, self.rect.y = pos
+        self.gravity = 2
+
+    def update(self):
+        screen_rect = (0, 0, 800, 650)
+        self.velocity[1] += self.gravity
+        self.rect.x += self.velocity[0]
+        self.rect.y += self.velocity[1]
+        if not self.rect.colliderect(screen_rect):
+            self.kill()
+
+
+def create_particles(position):
+    particle_count = 30
+    numbers = range(-10, 10)
+    for _ in range(particle_count):
+        Particle(position, random.choice(numbers), random.choice(numbers))
 
 
 class Hero(pygame.sprite.Sprite):
@@ -109,6 +122,7 @@ class Hero(pygame.sprite.Sprite):
         self.speedy = 0
 
     def update(self, x1, y1):
+        self.image = load_image('calm.png')
         if 110 < x1 < 250 and 250 < y1 < 350:
             self.rect.centerx = x1
             self.rect.centery = y1
@@ -134,13 +148,19 @@ class Hero(pygame.sprite.Sprite):
                 225 < x1 < 300 and 150 < y1 < 200:
             self.rect.centerx = x1
             self.rect.centery = y1
+            self.image = self.image_sleep
+        elif 275 < x1 < 350 and 350 < y1 < 450:
+            create_particles((x1, y1))
+            self.rect.centerx = 800
+            self.rect.centery = 800
+        elif 450 < x1 < 575 and 400 < y1 < 475:
+            self.rect.centerx = x1
+            self.rect.centery = y1
+            self.image = self.image_food
 
 
 def main_play():
     FPS = 60
-    size = width, height = 800, 650
-    screen = pygame.display.set_mode(size)
-    pygame.display.set_caption('Тамагочи')
     bg = load_image("cub.jpg")
     all_sprites = pygame.sprite.Group()
     player = Hero()
@@ -152,6 +172,7 @@ def main_play():
     cursor_img_rect = cursor_img.get_rect()
     running = True
     clock = pygame.time.Clock()
+
     while running:
         clock.tick(FPS)
         for event in pygame.event.get():
@@ -161,30 +182,40 @@ def main_play():
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 x1, y1 = pygame.mouse.get_pos()
                 all_sprites.update(x1, y1)
-            all_sprites.draw(screen)
-            cursor_img_rect.x, cursor_img_rect.y = pygame.mouse.get_pos()
-            if 175 < cursor_img_rect.x < 300 and 175 < cursor_img_rect.y < 250 or \
-                    225 < cursor_img_rect.x < 300 and 150 < cursor_img_rect.y < 200:
-                screen.blit(hand_cursor_img, cursor_img_rect)
-            elif 275 < cursor_img_rect.x < 350 and 350 < cursor_img_rect.y < 450:
-                screen.blit(hand_cursor_img, cursor_img_rect)
-            elif 450 < cursor_img_rect.x < 575 and 400 < cursor_img_rect.y < 475:
-                screen.blit(hand_cursor_img, cursor_img_rect)
-            else:
-                screen.blit(cursor_img, cursor_img_rect)
-            pygame.display.flip()
-            screen.blit(bg, (0, 0))
+
+        cursor_img_rect.x, cursor_img_rect.y = pygame.mouse.get_pos()
+        if 175 < cursor_img_rect.x < 300 and 175 < cursor_img_rect.y < 250 or \
+                225 < cursor_img_rect.x < 300 and 150 < cursor_img_rect.y < 200:
+            screen.blit(hand_cursor_img, cursor_img_rect)
+        elif 275 < cursor_img_rect.x < 350 and 350 < cursor_img_rect.y < 450:
+            screen.blit(hand_cursor_img, cursor_img_rect)
+        elif 450 < cursor_img_rect.x < 575 and 400 < cursor_img_rect.y < 475:
+            screen.blit(hand_cursor_img, cursor_img_rect)
+        else:
+            screen.blit(cursor_img, cursor_img_rect)
+
+        bub_sprites.update()
+        bub_sprites.draw(screen)
+        all_sprites.draw(screen)
+        pygame.display.flip()
+        clock.tick(50)
+        screen.blit(bg, (0, 0))
 
 
 if __name__ == '__main__':
     pygame.init()
-    main_play()
     size = width, height = 800, 650
     screen = pygame.display.set_mode(size)
     pygame.display.set_caption('Тамагочи')
+
+    particles = [load_image("bubble.png")]
+    for scale in (5, 10, 20):
+        particles.append(pygame.transform.scale(particles[0], (scale, scale)))
+    bub_sprites = pygame.sprite.Group()
+
     var = start_menu()
     if var == 'Игра':
-        main_screen()
+        main_play()
     elif var == 'Правила':
         rules()
     pygame.quit()
