@@ -162,9 +162,17 @@ class Hero(pygame.sprite.Sprite):
 def main_play():
     FPS = 60
     bg = load_image("cub.jpg")
+    food_icon = load_image('food_icon.png')
+    sleep_icon = load_image('sleep_icon.png')
+    soap_icon = load_image('soap_icon.png')
     all_sprites = pygame.sprite.Group()
     player = Hero()
     all_sprites.add(player)
+
+    font = pygame.font.SysFont("jokerman", 40)
+    scale_food = font.render("100", True, (255, 255, 255))
+    scale_sleep = font.render("100", True, (255, 255, 255))
+    scale_soap = font.render("100", True, (255, 255, 255))
 
     pygame.mouse.set_visible(False)
     cursor_img = load_image('arrow.png')
@@ -199,7 +207,16 @@ def main_play():
         all_sprites.draw(screen)
         pygame.display.flip()
         clock.tick(50)
+
         screen.blit(bg, (0, 0))
+
+        screen.blit(food_icon, (690, 120))
+        screen.blit(sleep_icon, (690, 250))
+        screen.blit(soap_icon, (700, 400))
+
+        screen.blit(scale_food, (705, 200))
+        screen.blit(scale_sleep, (705, 330))
+        screen.blit(scale_soap, (705, 475))
 
 
 if __name__ == '__main__':
