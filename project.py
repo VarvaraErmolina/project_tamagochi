@@ -123,6 +123,12 @@ class Hero(pygame.sprite.Sprite):
 
     def update(self, x1, y1):
         self.image = load_image('calm.png')
+        shower_sound = pygame.mixer.Sound('shower.mp3')
+        sleep_sound = pygame.mixer.Sound('sleep.mp3')
+        food_sound = pygame.mixer.Sound('food.mp3')
+        shower_sound.set_volume(0.7)
+        sleep_sound.set_volume(0.8)
+        food_sound.set_volume(0.7)
         if 110 < x1 < 250 and 250 < y1 < 350:
             self.rect.centerx = x1
             self.rect.centery = y1
@@ -146,14 +152,17 @@ class Hero(pygame.sprite.Sprite):
             self.rect.centery = y1
         elif 175 < x1 < 300 and 175 < y1 < 250 or \
                 225 < x1 < 300 and 150 < y1 < 200:
+            sleep_sound.play()
             self.rect.centerx = x1
             self.rect.centery = y1
             self.image = self.image_sleep
         elif 275 < x1 < 350 and 350 < y1 < 450:
+            shower_sound.play()
             create_particles((x1, y1))
             self.rect.centerx = 800
             self.rect.centery = 800
         elif 450 < x1 < 575 and 400 < y1 < 475:
+            food_sound.play()
             self.rect.centerx = x1
             self.rect.centery = y1
             self.image = self.image_food
@@ -168,6 +177,10 @@ def main_play():
     all_sprites = pygame.sprite.Group()
     player = Hero()
     all_sprites.add(player)
+
+    pygame.mixer.music.load('copycat.mp3')
+    pygame.mixer.music.set_volume(0.2)
+    pygame.mixer.music.play(loops=-1)
 
     font = pygame.font.SysFont("jokerman", 40)
     scale_food = font.render("100", True, (255, 255, 255))
