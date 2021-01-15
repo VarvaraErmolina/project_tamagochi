@@ -4,6 +4,8 @@ import sys
 import random
 import datetime
 
+pygame.init()
+
 
 def load_image(name, colorkey=None):
     fullname = os.path.join('data', name)
@@ -95,14 +97,30 @@ def start_play():
             clock.tick(FPS)
 
 
-def happy_ending():
-    text_win = ['Вы отлично ухаживали за питомцем', 'он вырос здоровым и счастливым']
+def happy_ending(pet):
+    text_win = ['Вы отлично ухаживали за питомцем,', 'он вырос здоровым и счастливым!']
     menu_bg = pygame.transform.scale(load_image('fon_menu.jpg'), (800, 650))
     screen.blit(menu_bg, (0, 0))
     clock = pygame.time.Clock()
     font = pygame.font.Font(None, 50)
     text_coord = 110
     running = True
+
+    if pet == 'one':
+        image = load_image('big_calm.png')
+        screen.blit(image, (100, 250))
+    elif pet == 'mam':
+        image = load_image('big_mam_calm.png')
+        screen.blit(image, (50, 200))
+    elif pet == 'meme':
+        image = load_image('big_meme_calm.png')
+        screen.blit(image, (0, 150))
+
+    pygame.mixer.music.stop()
+    good_sound = pygame.mixer.Sound('good.mp3')
+    good_sound.set_volume(0.7)
+    good_sound.play()
+
     for line in text_win:
         string_rendered = font.render(line, True, (0, 0, 0))
         intro_rect = string_rendered.get_rect()
@@ -117,22 +135,41 @@ def happy_ending():
                 file = open("data/info.txt", 'w')
                 file.write('')
                 file.close()
+                pygame.quit()
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 file = open("data/info.txt", 'w')
                 file.write('')
                 file.close()
+                pygame.quit()
         pygame.display.flip()
         clock.tick(FPS)
 
 
-def sad_ending():
-    text_win = ['К сожалению вы плохо ухаживали', 'за питомцем и он ушел']
+def sad_ending(pet):
+    pygame.init()
+    text_win = ['К сожалению, вы плохо ухаживали', 'за питомцем, и он ушел.']
     menu_bg = pygame.transform.scale(load_image('fon_menu.jpg'), (800, 650))
     screen.blit(menu_bg, (0, 0))
     clock = pygame.time.Clock()
     font = pygame.font.Font(None, 50)
     text_coord = 110
     running = True
+
+    if pet == 'one':
+        image = load_image('mem_leave.png')
+        screen.blit(image, (100, 250))
+    elif pet == 'mam':
+        image = load_image('meme_leave.png')
+        screen.blit(image, (50, 200))
+    elif pet == 'meme':
+        image = load_image('mam_leave.png')
+        screen.blit(image, (0, 150))
+
+    pygame.mixer.music.stop()
+    bad_sound = pygame.mixer.Sound('bad.mp3')
+    bad_sound.set_volume(0.5)
+    bad_sound.play()
+
     for line in text_win:
         string_rendered = font.render(line, True, (0, 0, 0))
         intro_rect = string_rendered.get_rect()
@@ -141,17 +178,19 @@ def sad_ending():
         intro_rect.x = 50
         text_coord += intro_rect.height
         screen.blit(string_rendered, intro_rect)
+    pygame.display.flip()
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 file = open("data/info.txt", 'w')
                 file.write('')
                 file.close()
+                pygame.quit()
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 file = open("data/info.txt", 'w')
                 file.write('')
                 file.close()
-        pygame.display.flip()
+                pygame.quit()
         clock.tick(FPS)
 
 
@@ -176,11 +215,11 @@ def open_information():
         first_time = text[5]
     if eat > 0 or sleep > 0 or clean > 0:
         if (int(time[8:10]) - int(first_time[8:10])) * 24 + (int(time[11:13]) - int(first_time[11:13])) >= 168:
-            happy_ending()
+            happy_ending(pet)
         else:
             return eat, sleep, clean, pet, time, first_time
     elif eat <= 0 or sleep <= 0 or clean <= 0:
-        sad_ending()
+        sad_ending(pet)
     return eat, sleep, clean, pet, time, first_time
 
 
@@ -216,12 +255,13 @@ def start_menu():
 
 
 def rules():
-    rul = ['Правила']
+    rul = ['Правила', '1. Ухаживай за питомцем,', 'нажимая на предметы в комнате',
+           '2. Перемещай питомца по комнате,', 'используя мышку']
     menu_bg = pygame.transform.scale(load_image('fon_menu.jpg'), (800, 650))
     screen.blit(menu_bg, (0, 0))
     clock = pygame.time.Clock()
-    font = pygame.font.Font(None, 100)
-    text_coord = 110
+    font = pygame.font.Font(None, 50)
+    text_coord = 50
     running = True
     for line in rul:
         string_rendered = font.render(line, True, (0, 0, 0))
@@ -236,7 +276,7 @@ def rules():
             if event.type == pygame.QUIT:
                 exit()
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                main_play()
+                start_menu()
         pygame.display.flip()
         clock.tick(FPS)
 
@@ -354,10 +394,6 @@ def main_play():
     soap_icon = load_image('soap_icon.png')
     all_sprites.add(player)
 
-    pygame.mixer.music.load('copycat.mp3')
-    pygame.mixer.music.set_volume(0.2)
-    pygame.mixer.music.play(loops=-1)
-
     font = pygame.font.SysFont("jokerman", 40)
     scale_food = font.render("100", True, (255, 255, 255))
     scale_sleep = font.render("100", True, (255, 255, 255))
@@ -413,6 +449,10 @@ if __name__ == '__main__':
     screen = pygame.display.set_mode(size)
     pygame.display.set_caption('Тамагочи')
     FPS = 60
+
+    pygame.mixer.music.load('copycat.mp3')
+    pygame.mixer.music.set_volume(0.2)
+    pygame.mixer.music.play(loops=-1)
 
     particles = [load_image("bubble.png")]
     for scale in (5, 10, 20):
