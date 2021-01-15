@@ -22,6 +22,9 @@ def load_image(name, colorkey=None):
 
 
 def exit():
+    file = open("data/info.txt", 'w')
+    file.write(f'{indicators[0]}\n{indicators[1]}\n{indicators[2]}\n{indicators[3]}\n{indicators[4]}\n{indicators[5]}')
+    file.close()
     pygame.quit()
     sys.exit()
 
@@ -111,9 +114,13 @@ def happy_ending():
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                exit()
+                file = open("data/info.txt", 'w')
+                file.write('')
+                file.close()
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                exit()
+                file = open("data/info.txt", 'w')
+                file.write('')
+                file.close()
         pygame.display.flip()
         clock.tick(FPS)
 
@@ -137,9 +144,13 @@ def sad_ending():
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                exit()
+                file = open("data/info.txt", 'w')
+                file.write('')
+                file.close()
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                exit()
+                file = open("data/info.txt", 'w')
+                file.write('')
+                file.close()
         pygame.display.flip()
         clock.tick(FPS)
 
