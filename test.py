@@ -2,6 +2,7 @@ import pygame
 import os
 import sys
 import random
+import datetime
 
 
 def load_image(name, colorkey=None):
@@ -25,6 +26,153 @@ def exit():
     sys.exit()
 
 
+def start_play():
+    starting_play_bg = pygame.transform.scale(load_image('fon_menu.jpg'), (800, 650))
+    screen.blit(starting_play_bg, (0, 0))
+    running = True
+    start_text = ['Выбери персонажа', "", "", "", '              Ок']
+    font = pygame.font.Font(None, 100)
+    text_coord = 75
+    pet = ''
+    for line in start_text:
+        string_rendered = font.render(line, True, (0, 0, 0))
+        intro_rect = string_rendered.get_rect()
+        text_coord += 13
+        intro_rect.top = text_coord
+        intro_rect.x = 70
+        text_coord += intro_rect.height
+        screen.blit(string_rendered, intro_rect)
+    clock = pygame.time.Clock()
+    menu_hero = pygame.sprite.Group()
+    one = pygame.sprite.Sprite()
+    one.image = load_image("dark_calm.png")
+    one.rect = one.image.get_rect()
+    one.rect.x = 100
+    one.rect.y = 200
+    menu_hero.add(one)
+    mam = pygame.sprite.Sprite()
+    mam.image = load_image("dark_mam_calm.png")
+    mam.rect = mam.image.get_rect()
+    mam.rect.x = 300
+    mam.rect.y = 215
+    menu_hero.add(mam)
+    meme = pygame.sprite.Sprite()
+    meme.image = load_image("dark_meme_calm.png")
+    meme.rect = meme.image.get_rect()
+    meme.rect.x = 500
+    meme.rect.y = 215
+    menu_hero.add(meme)
+    menu_hero.draw(screen)
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                exit()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                coor_in_start_play = event.pos
+                if pet == '':
+                    if 100 < coor_in_start_play[0] < 298 and 200 < coor_in_start_play[1] < 415:
+                        one.image = load_image('big_calm.png')
+                        mam.image = load_image("dark_mam_calm.png")
+                        meme.image = load_image("dark_meme_calm.png")
+                        pet = 'one'
+                    elif 330 < coor_in_start_play[0] < 475 and 215 < coor_in_start_play[1] < 398:
+                        mam.image = load_image("big_mam_calm.png")
+                        one.image = load_image("dark_calm.png")
+                        meme.image = load_image("dark_meme_calm.png")
+                        pet = 'mam'
+                    elif 510 < coor_in_start_play[0] < 665 and 220 < coor_in_start_play[1] < 400:
+                        meme.image = load_image("big_meme_calm.png")
+                        mam.image = load_image("dark_mam_calm.png")
+                        one.image = load_image("dark_calm.png")
+                        pet = 'meme'
+                    menu_hero.draw(screen)
+                elif pet != '' and 340 < coor_in_start_play[0] < 430 and 431 < coor_in_start_play[1] < 450:
+                    return pet
+            pygame.display.flip()
+            clock.tick(FPS)
+
+
+def happy_ending():
+    text_win = ['Вы отлично ухаживали за питомцем', 'он вырос здоровым и счастливым']
+    menu_bg = pygame.transform.scale(load_image('fon_menu.jpg'), (800, 650))
+    screen.blit(menu_bg, (0, 0))
+    clock = pygame.time.Clock()
+    font = pygame.font.Font(None, 50)
+    text_coord = 110
+    running = True
+    for line in text_win:
+        string_rendered = font.render(line, True, (0, 0, 0))
+        intro_rect = string_rendered.get_rect()
+        text_coord += 50
+        intro_rect.top = text_coord
+        intro_rect.x = 50
+        text_coord += intro_rect.height
+        screen.blit(string_rendered, intro_rect)
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                exit()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                exit()
+        pygame.display.flip()
+        clock.tick(FPS)
+
+
+def sad_ending():
+    text_win = ['К сожалению вы плохо ухаживали', 'за питомцем и он ушел']
+    menu_bg = pygame.transform.scale(load_image('fon_menu.jpg'), (800, 650))
+    screen.blit(menu_bg, (0, 0))
+    clock = pygame.time.Clock()
+    font = pygame.font.Font(None, 50)
+    text_coord = 110
+    running = True
+    for line in text_win:
+        string_rendered = font.render(line, True, (0, 0, 0))
+        intro_rect = string_rendered.get_rect()
+        text_coord += 50
+        intro_rect.top = text_coord
+        intro_rect.x = 50
+        text_coord += intro_rect.height
+        screen.blit(string_rendered, intro_rect)
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                exit()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                exit()
+        pygame.display.flip()
+        clock.tick(FPS)
+
+
+def open_information():
+    file = open('data/info.txt', mode='r')
+    text = file.read().split('\n')
+    if text == ['']:
+        eat = 100
+        sleep = 100
+        clean = 100
+        time = ''.join(str(datetime.datetime.now()))
+        first_time = time
+        pet = start_play()
+    else:
+        time = ''.join(str(datetime.datetime.now()))
+        old_time = text[4]
+        minus = (int(time[8:10]) - int(old_time[8:10])) * 24 + (int(time[11:13]) - int(old_time[11:13]))
+        eat = int(text[0]) - minus
+        sleep = int(text[1]) - minus
+        clean = int(text[2]) - minus
+        pet = text[3]
+        first_time = text[5]
+    if eat > 0 or sleep > 0 or clean > 0:
+        if (int(time[8:10]) - int(first_time[8:10])) * 24 + (int(time[11:13]) - int(first_time[11:13])) >= 168:
+            happy_ending()
+        else:
+            return eat, sleep, clean, pet, time, first_time
+    elif eat <= 0 or sleep <= 0 or clean <= 0:
+        sad_ending()
+    return eat, sleep, clean, pet, time, first_time
+
+
 def start_menu():
     FPS = 60
     menu_text = ['«Главное меню»', 'Играть', 'Правила']
@@ -32,7 +180,8 @@ def start_menu():
     screen.blit(menu_bg, (0, 0))
     running = True
     clock = pygame.time.Clock()
-    font = pygame.font.Font(None, 100)
+    font = pygame.font.SysFont('candara', 100)
+    # font = pygame.font.Font('font.otf', 70)
     text_coord = 110
     for line in menu_text:
         string_rendered = font.render(line, True, (0, 0, 0))
@@ -57,7 +206,6 @@ def start_menu():
 
 
 def rules():
-    FPS = 60
     rul = ['Правила']
     menu_bg = pygame.transform.scale(load_image('fon_menu.jpg'), (800, 650))
     screen.blit(menu_bg, (0, 0))
@@ -112,9 +260,20 @@ def create_particles(position):
 class Hero(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image = load_image('calm.png')
-        self.image_sleep = load_image('sleep.png')
-        self.image_food = load_image('food.png')
+
+        pet = indicators[3]
+        if pet == 'one':
+            self.image = load_image('calm.png')
+            self.image_sleep = load_image('sleep.png')
+            self.image_food = load_image('food.png')
+        elif pet == 'meme':
+            self.image = load_image('meme_calm.png')
+            self.image_sleep = load_image('meme_sleep.png')
+            self.image_food = load_image('meme_food.png')
+        elif pet == 'mam':
+            self.image = load_image('mam_calm.png')
+            self.image_sleep = load_image('mam_sleep.png')
+            self.image_food = load_image('mam_food.png')
         self.rect = self.image.get_rect()
         self.rect.centerx = 400
         self.rect.bottom = 500
@@ -122,7 +281,21 @@ class Hero(pygame.sprite.Sprite):
         self.speedy = 0
 
     def update(self, x1, y1):
-        self.image = load_image('calm.png')
+        pet = indicators[3]
+
+        shower_sound = pygame.mixer.Sound('shower.mp3')
+        sleep_sound = pygame.mixer.Sound('sleep.mp3')
+        food_sound = pygame.mixer.Sound('food.mp3')
+        shower_sound.set_volume(0.7)
+        sleep_sound.set_volume(0.8)
+        food_sound.set_volume(0.7)
+
+        if pet == 'one':
+            self.image = load_image('calm.png')
+        elif pet == 'meme':
+            self.image = load_image('meme_calm.png')
+        elif pet == 'mam':
+            self.image = load_image('mam_calm.png')
         if 110 < x1 < 250 and 250 < y1 < 350:
             self.rect.centerx = x1
             self.rect.centery = y1
@@ -146,41 +319,47 @@ class Hero(pygame.sprite.Sprite):
             self.rect.centery = y1
         elif 175 < x1 < 300 and 175 < y1 < 250 or \
                 225 < x1 < 300 and 150 < y1 < 200:
+            sleep_sound.play()
             self.rect.centerx = x1
             self.rect.centery = y1
             self.image = self.image_sleep
         elif 275 < x1 < 350 and 350 < y1 < 450:
+            shower_sound.play()
             create_particles((x1, y1))
             self.rect.centerx = 800
             self.rect.centery = 800
         elif 450 < x1 < 575 and 400 < y1 < 475:
+            food_sound.play()
             self.rect.centerx = x1
             self.rect.centery = y1
             self.image = self.image_food
 
 
 def main_play():
-    FPS = 60
     bg = load_image("cub.jpg")
+    all_sprites = pygame.sprite.Group()
+    player = Hero()
     food_icon = load_image('food_icon.png')
     sleep_icon = load_image('sleep_icon.png')
     soap_icon = load_image('soap_icon.png')
-    all_sprites = pygame.sprite.Group()
-    player = Hero()
     all_sprites.add(player)
+
+    pygame.mixer.music.load('copycat.mp3')
+    pygame.mixer.music.set_volume(0.2)
+    pygame.mixer.music.play(loops=-1)
 
     font = pygame.font.SysFont("jokerman", 40)
     scale_food = font.render("100", True, (255, 255, 255))
     scale_sleep = font.render("100", True, (255, 255, 255))
     scale_soap = font.render("100", True, (255, 255, 255))
-
     pygame.mouse.set_visible(False)
+
     cursor_img = load_image('arrow.png')
     hand_cursor_img = load_image('hand.png')
     cursor_img_rect = cursor_img.get_rect()
+
     running = True
     clock = pygame.time.Clock()
-
     while running:
         clock.tick(FPS)
         for event in pygame.event.get():
@@ -207,7 +386,6 @@ def main_play():
         all_sprites.draw(screen)
         pygame.display.flip()
         clock.tick(50)
-
         screen.blit(bg, (0, 0))
 
         screen.blit(food_icon, (690, 120))
@@ -224,6 +402,7 @@ if __name__ == '__main__':
     size = width, height = 800, 650
     screen = pygame.display.set_mode(size)
     pygame.display.set_caption('Тамагочи')
+    FPS = 60
 
     particles = [load_image("bubble.png")]
     for scale in (5, 10, 20):
@@ -232,6 +411,7 @@ if __name__ == '__main__':
 
     var = start_menu()
     if var == 'Игра':
+        indicators = open_information()
         main_play()
     elif var == 'Правила':
         rules()
