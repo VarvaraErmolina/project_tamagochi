@@ -87,7 +87,58 @@ def start_play():
                 menu_hero.draw(screen)
                 if pet != '' and 340 < coor_in_start_play[0] < 430 and 431 < coor_in_start_play[1] < 450:
                     return pet
+        pygame.display.flip()
+        clock.tick(FPS)
 
+
+def happy_ending():
+    text_win = ['Вы отлично ухаживали за питомцем', 'он вырос здоровым и счастливым']
+    menu_bg = pygame.transform.scale(load_image('fon_menu.jpg'), (800, 650))
+    screen.blit(menu_bg, (0, 0))
+    clock = pygame.time.Clock()
+    font = pygame.font.Font(None, 50)
+    text_coord = 110
+    running = True
+    for line in text_win:
+        string_rendered = font.render(line, True, (0, 0, 0))
+        intro_rect = string_rendered.get_rect()
+        text_coord += 50
+        intro_rect.top = text_coord
+        intro_rect.x = 50
+        text_coord += intro_rect.height
+        screen.blit(string_rendered, intro_rect)
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                exit()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                exit()
+        pygame.display.flip()
+        clock.tick(FPS)
+
+
+def sad_ending():
+    text_win = ['К сожалению вы плохо ухаживали', 'за питомцем и он ушел']
+    menu_bg = pygame.transform.scale(load_image('fon_menu.jpg'), (800, 650))
+    screen.blit(menu_bg, (0, 0))
+    clock = pygame.time.Clock()
+    font = pygame.font.Font(None, 50)
+    text_coord = 110
+    running = True
+    for line in text_win:
+        string_rendered = font.render(line, True, (0, 0, 0))
+        intro_rect = string_rendered.get_rect()
+        text_coord += 50
+        intro_rect.top = text_coord
+        intro_rect.x = 50
+        text_coord += intro_rect.height
+        screen.blit(string_rendered, intro_rect)
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                exit()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                exit()
         pygame.display.flip()
         clock.tick(FPS)
 
@@ -100,15 +151,25 @@ def open_information():
         sleep = 100
         clean = 100
         time = ''.join(str(datetime.datetime.now()))
+        first_time = time
         pet = start_play()
     else:
-        time = ''.join(str(datetime.datetime.now()))  # здесь ещё формула будет для высчета
-        old_time = text[3]
-        eat = text[0]
-        sleep = text[1]
-        clean = text[2]
-        pet = text[4]
-    return eat, sleep, clean, pet, time
+        time = ''.join(str(datetime.datetime.now()))
+        old_time = text[4]
+        minus = (int(time[8:10]) - int(old_time[8:10])) * 24 + (int(time[11:13]) - int(old_time[11:13]))
+        eat = int(text[0]) - minus
+        sleep = int(text[1]) - minus
+        clean = int(text[2]) - minus
+        pet = text[3]
+        first_time = text[5]
+    if eat > 0 or sleep > 0 or clean > 0:
+        if (int(time[8:10]) - int(first_time[8:10])) * 24 + (int(time[11:13]) - int(first_time[11:13])) >= 168:
+            happy_ending()
+        else:
+            return eat, sleep, clean, pet, time, first_time
+    elif eat <= 0 or sleep <= 0 or clean <= 0:
+        sad_ending()
+    return eat, sleep, clean, pet, time, first_time
 
 
 def start_menu():
@@ -249,7 +310,7 @@ def main_play():
     all_sprites = pygame.sprite.Group()
     player = Hero()
     all_sprites.add(player)
-
+    indicators = open_information()
     pygame.mouse.set_visible(False)
     cursor_img = load_image('arrow.png')
     hand_cursor_img = load_image('hand.png')
@@ -297,7 +358,7 @@ if __name__ == '__main__':
     bub_sprites = pygame.sprite.Group()
     var = start_menu()
     if var == 'Игра':
-        open_information()
+        indicators = open_information()
         main_play()
     elif var == 'Правила':
         rules()
