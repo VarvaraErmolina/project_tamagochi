@@ -31,7 +31,6 @@ def exit():
 
 def start_play():
     starting_play_bg = pygame.transform.scale(load_image('fon_menu.jpg'), (800, 650))
-    screen.blit(starting_play_bg, (0, 0))
     running = True
     first_text = ['         Сначала']
     text_coord2 = 13
@@ -39,6 +38,7 @@ def start_play():
     font = pygame.font.Font(None, 100)
     text_coord = 75
     pet = ''
+    lines = []
     for line in first_text:
         string_rendered = font.render(line, True, (0, 0, 0))
         intro_rect = string_rendered.get_rect()
@@ -46,7 +46,7 @@ def start_play():
         intro_rect.top = text_coord2
         intro_rect.x = 70
         text_coord2 += intro_rect.height
-        screen.blit(string_rendered, intro_rect)
+        lines.append((string_rendered, intro_rect))
     for line in start_text:
         string_rendered = font.render(line, True, (0, 0, 0))
         intro_rect = string_rendered.get_rect()
@@ -54,7 +54,7 @@ def start_play():
         intro_rect.top = text_coord
         intro_rect.x = 70
         text_coord += intro_rect.height
-        screen.blit(string_rendered, intro_rect)
+        lines.append((string_rendered, intro_rect))
     clock = pygame.time.Clock()
     menu_hero = pygame.sprite.Group()
     one = pygame.sprite.Sprite()
@@ -78,6 +78,27 @@ def start_play():
     menu_hero.draw(screen)
     while running:
         for event in pygame.event.get():
+            screen.blit(starting_play_bg, (0, 0))
+            menu_hero.draw(screen)
+            for line in lines:
+                screen.blit(line[0], line[1])
+            pygame.mouse.set_visible(False)
+            cursor_img = load_image('arrow.png')
+            hand_cursor_img = load_image('hand.png')
+            cursor_img_rect = cursor_img.get_rect()
+            cursor_img_rect.x, cursor_img_rect.y = pygame.mouse.get_pos()
+            if 120 < cursor_img_rect.x < 250 and 200 < cursor_img_rect.y < 390:
+                screen.blit(hand_cursor_img, cursor_img_rect)
+            elif 320 < cursor_img_rect.x < 470 and 215 < cursor_img_rect.y < 380:
+                screen.blit(hand_cursor_img, cursor_img_rect)
+            elif 500 < cursor_img_rect.x < 640 and 215 < cursor_img_rect.y < 370:
+                screen.blit(hand_cursor_img, cursor_img_rect)
+            elif 340 < cursor_img_rect.x < 430 and 431 < cursor_img_rect.y < 450:
+                screen.blit(hand_cursor_img, cursor_img_rect)
+            else:
+                screen.blit(cursor_img, cursor_img_rect)
+
+            pygame.display.flip()
             if event.type == pygame.QUIT:
                 exit()
             elif event.type == pygame.MOUSEBUTTONDOWN:
@@ -107,27 +128,17 @@ def start_play():
 def happy_ending(pet):
     text_win = ['Вы отлично ухаживали за питомцем,', 'он вырос здоровым и счастливым!']
     menu_bg = pygame.transform.scale(load_image('fon_menu.jpg'), (800, 650))
-    screen.blit(menu_bg, (0, 0))
     clock = pygame.time.Clock()
     font = pygame.font.Font(None, 50)
     text_coord = 110
     running = True
-
-    if pet == 'one':
-        image = load_image('big_calm.png')
-        screen.blit(image, (100, 250))
-    elif pet == 'mam':
-        image = load_image('big_mam_calm.png')
-        screen.blit(image, (50, 200))
-    elif pet == 'meme':
-        image = load_image('big_meme_calm.png')
-        screen.blit(image, (0, 150))
 
     pygame.mixer.music.stop()
     good_sound = pygame.mixer.Sound('good.mp3')
     good_sound.set_volume(0.7)
     good_sound.play()
 
+    lines = []
     for line in text_win:
         string_rendered = font.render(line, True, (0, 0, 0))
         intro_rect = string_rendered.get_rect()
@@ -135,9 +146,31 @@ def happy_ending(pet):
         intro_rect.top = text_coord
         intro_rect.x = 50
         text_coord += intro_rect.height
-        screen.blit(string_rendered, intro_rect)
+        lines.append((string_rendered, intro_rect))
+
     while running:
         for event in pygame.event.get():
+            screen.blit(menu_bg, (0, 0))
+            if pet == 'one':
+                image = load_image('mem_leave.png')
+                screen.blit(image, (100, 250))
+            elif pet == 'mam':
+                image = load_image('meme_leave.png')
+                screen.blit(image, (50, 200))
+            elif pet == 'meme':
+                image = load_image('mam_leave.png')
+                screen.blit(image, (0, 150))
+
+            pygame.mouse.set_visible(False)
+            cursor_img = load_image('arrow.png')
+            cursor_img_rect = cursor_img.get_rect()
+            cursor_img_rect.x, cursor_img_rect.y = pygame.mouse.get_pos()
+            screen.blit(cursor_img, cursor_img_rect)
+
+            for line in lines:
+                screen.blit(line[0], line[1])
+            pygame.display.flip()
+
             if event.type == pygame.QUIT:
                 file = open("data/info.txt", 'w')
                 file.write('')
@@ -156,27 +189,17 @@ def sad_ending(pet):
     pygame.init()
     text_win = ['К сожалению, вы плохо ухаживали', 'за питомцем, и он ушел.']
     menu_bg = pygame.transform.scale(load_image('fon_menu.jpg'), (800, 650))
-    screen.blit(menu_bg, (0, 0))
     clock = pygame.time.Clock()
     font = pygame.font.Font(None, 50)
     text_coord = 110
     running = True
-
-    if pet == 'one':
-        image = load_image('mem_leave.png')
-        screen.blit(image, (100, 250))
-    elif pet == 'mam':
-        image = load_image('meme_leave.png')
-        screen.blit(image, (50, 200))
-    elif pet == 'meme':
-        image = load_image('mam_leave.png')
-        screen.blit(image, (0, 150))
 
     pygame.mixer.music.stop()
     bad_sound = pygame.mixer.Sound('bad.mp3')
     bad_sound.set_volume(0.5)
     bad_sound.play()
 
+    lines = []
     for line in text_win:
         string_rendered = font.render(line, True, (0, 0, 0))
         intro_rect = string_rendered.get_rect()
@@ -184,10 +207,32 @@ def sad_ending(pet):
         intro_rect.top = text_coord
         intro_rect.x = 50
         text_coord += intro_rect.height
-        screen.blit(string_rendered, intro_rect)
-    pygame.display.flip()
+        lines.append((string_rendered, intro_rect))
+
     while running:
+        screen.blit(menu_bg, (0, 0))
+
+        if pet == 'one':
+            image = load_image('mem_leave.png')
+            screen.blit(image, (100, 250))
+        elif pet == 'mam':
+            image = load_image('meme_leave.png')
+            screen.blit(image, (50, 200))
+        elif pet == 'meme':
+            image = load_image('mam_leave.png')
+            screen.blit(image, (0, 150))
+
         for event in pygame.event.get():
+
+            pygame.mouse.set_visible(False)
+            cursor_img = load_image('arrow.png')
+            cursor_img_rect = cursor_img.get_rect()
+            cursor_img_rect.x, cursor_img_rect.y = pygame.mouse.get_pos()
+            screen.blit(cursor_img, cursor_img_rect)
+            for line in lines:
+                screen.blit(line[0], line[1])
+            pygame.display.flip()
+
             if event.type == pygame.QUIT:
                 file = open("data/info.txt", 'w')
                 file.write('')
@@ -239,6 +284,7 @@ def start_menu():
     clock = pygame.time.Clock()
     font = pygame.font.Font(None, 100)
     text_coord = 110
+    lines = []
     for line in menu_text:
         string_rendered = font.render(line, True, (0, 0, 0))
         intro_rect = string_rendered.get_rect()
@@ -246,16 +292,33 @@ def start_menu():
         intro_rect.top = text_coord
         intro_rect.x = 50
         text_coord += intro_rect.height
-        screen.blit(string_rendered, intro_rect)
+        lines.append((string_rendered, intro_rect))
     while running:
         for event in pygame.event.get():
+            screen.blit(menu_bg, (0, 0))
+            for line in lines:
+                screen.blit(line[0], line[1])
+            pygame.mouse.set_visible(False)
+            cursor_img = load_image('arrow.png')
+            hand_cursor_img = load_image('hand.png')
+            cursor_img_rect = cursor_img.get_rect()
+            cursor_img_rect.x, cursor_img_rect.y = pygame.mouse.get_pos()
+            if 50 < cursor_img_rect.x < 300 and 270 < cursor_img_rect.y < 350:
+                screen.blit(hand_cursor_img, cursor_img_rect)
+            elif 50 < cursor_img_rect.x < 340 and 400 < cursor_img_rect.y < 470:
+                screen.blit(hand_cursor_img, cursor_img_rect)
+            else:
+                screen.blit(cursor_img, cursor_img_rect)
+
             if event.type == pygame.QUIT:
                 exit()
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 coor_in_menu = event.pos
                 if 270 < coor_in_menu[1] < 350:
+                    screen.blit(hand_cursor_img, cursor_img_rect)
                     return 'Игра'
                 elif 400 < coor_in_menu[1] < 470:
+                    screen.blit(hand_cursor_img, cursor_img_rect)
                     return 'Правила'
         pygame.display.flip()
         clock.tick(FPS)
@@ -265,11 +328,11 @@ def rules():
     rul = ['Правила', '1. Ухаживай за питомцем,', 'нажимая на предметы в комнате',
            '2. Перемещай питомца по комнате,', 'используя мышку']
     menu_bg = pygame.transform.scale(load_image('fon_menu.jpg'), (800, 650))
-    screen.blit(menu_bg, (0, 0))
     clock = pygame.time.Clock()
     font = pygame.font.Font(None, 50)
     text_coord = 50
     running = True
+    lines = []
     for line in rul:
         string_rendered = font.render(line, True, (0, 0, 0))
         intro_rect = string_rendered.get_rect()
@@ -277,13 +340,23 @@ def rules():
         intro_rect.top = text_coord
         intro_rect.x = 50
         text_coord += intro_rect.height
-        screen.blit(string_rendered, intro_rect)
+        lines.append((string_rendered, intro_rect))
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 exit()
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 main_play()
+
+            pygame.mouse.set_visible(False)
+            cursor_img = load_image('arrow.png')
+            cursor_img_rect = cursor_img.get_rect()
+            cursor_img_rect.x, cursor_img_rect.y = pygame.mouse.get_pos()
+
+            screen.blit(menu_bg, (0, 0))
+            for line in lines:
+                screen.blit(line[0], line[1])
+            screen.blit(cursor_img, cursor_img_rect)
         pygame.display.flip()
         clock.tick(FPS)
 
@@ -405,11 +478,6 @@ def main_play():
     scale_food = font.render("100", True, (255, 255, 255))
     scale_sleep = font.render("100", True, (255, 255, 255))
     scale_soap = font.render("100", True, (255, 255, 255))
-    pygame.mouse.set_visible(False)
-
-    cursor_img = load_image('arrow.png')
-    hand_cursor_img = load_image('hand.png')
-    cursor_img_rect = cursor_img.get_rect()
 
     running = True
     clock = pygame.time.Clock()
@@ -422,6 +490,11 @@ def main_play():
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 x1, y1 = pygame.mouse.get_pos()
                 all_sprites.update(x1, y1)
+
+        pygame.mouse.set_visible(False)
+        cursor_img = load_image('arrow.png')
+        hand_cursor_img = load_image('hand.png')
+        cursor_img_rect = cursor_img.get_rect()
 
         cursor_img_rect.x, cursor_img_rect.y = pygame.mouse.get_pos()
         if 175 < cursor_img_rect.x < 300 and 175 < cursor_img_rect.y < 250 or \
