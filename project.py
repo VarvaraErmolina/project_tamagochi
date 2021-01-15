@@ -33,10 +33,20 @@ def start_play():
     starting_play_bg = pygame.transform.scale(load_image('fon_menu.jpg'), (800, 650))
     screen.blit(starting_play_bg, (0, 0))
     running = True
-    start_text = ['Выбери персонажа', "", "", "", '              Ок']
+    first_text = ['         Сначала']
+    text_coord2 = 13
+    start_text = ['выбери персонажа:', "", "", "", '              Ок']
     font = pygame.font.Font(None, 100)
     text_coord = 75
     pet = ''
+    for line in first_text:
+        string_rendered = font.render(line, True, (0, 0, 0))
+        intro_rect = string_rendered.get_rect()
+        text_coord2 += 13
+        intro_rect.top = text_coord2
+        intro_rect.x = 70
+        text_coord2 += intro_rect.height
+        screen.blit(string_rendered, intro_rect)
     for line in start_text:
         string_rendered = font.render(line, True, (0, 0, 0))
         intro_rect = string_rendered.get_rect()
@@ -72,27 +82,26 @@ def start_play():
                 exit()
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 coor_in_start_play = event.pos
-                if pet == '':
-                    if 100 < coor_in_start_play[0] < 298 and 200 < coor_in_start_play[1] < 415:
-                        one.image = load_image('big_calm.png')
-                        mam.image = load_image("dark_mam_calm.png")
-                        meme.image = load_image("dark_meme_calm.png")
-                        pet = 'one'
-                    elif 330 < coor_in_start_play[0] < 475 and 215 < coor_in_start_play[1] < 398:
-                        mam.image = load_image("big_mam_calm.png")
-                        one.image = load_image("dark_calm.png")
-                        meme.image = load_image("dark_meme_calm.png")
-                        pet = 'mam'
-                    elif 510 < coor_in_start_play[0] < 665 and 220 < coor_in_start_play[1] < 400:
-                        meme.image = load_image("big_meme_calm.png")
-                        mam.image = load_image("dark_mam_calm.png")
-                        one.image = load_image("dark_calm.png")
-                        pet = 'meme'
-                    menu_hero.draw(screen)
-                elif pet != '' and 340 < coor_in_start_play[0] < 430 and 431 < coor_in_start_play[1] < 450:
+                if 100 < coor_in_start_play[0] < 298 and 200 < coor_in_start_play[1] < 415:
+                    one.image = load_image('big_calm.png')
+                    mam.image = load_image("dark_mam_calm.png")
+                    meme.image = load_image("dark_meme_calm.png")
+                    pet = 'one'
+                elif 330 < coor_in_start_play[0] < 475 and 215 < coor_in_start_play[1] < 398:
+                    mam.image = load_image("big_mam_calm.png")
+                    one.image = load_image("dark_calm.png")
+                    meme.image = load_image("dark_meme_calm.png")
+                    pet = 'mam'
+                elif 510 < coor_in_start_play[0] < 665 and 220 < coor_in_start_play[1] < 400:
+                    meme.image = load_image("big_meme_calm.png")
+                    mam.image = load_image("dark_mam_calm.png")
+                    one.image = load_image("dark_calm.png")
+                    pet = 'meme'
+                menu_hero.draw(screen)
+                if pet != '' and 340 < coor_in_start_play[0] < 430 and 431 < coor_in_start_play[1] < 450:
                     return pet
-            pygame.display.flip()
-            clock.tick(FPS)
+        pygame.display.flip()
+        clock.tick(FPS)
 
 
 def happy_ending(pet):
@@ -274,7 +283,7 @@ def rules():
             if event.type == pygame.QUIT:
                 exit()
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                start_menu()
+                main_play()
         pygame.display.flip()
         clock.tick(FPS)
 
@@ -458,8 +467,8 @@ if __name__ == '__main__':
     bub_sprites = pygame.sprite.Group()
 
     var = start_menu()
+    indicators = open_information()
     if var == 'Игра':
-        indicators = open_information()
         main_play()
     elif var == 'Правила':
         rules()
